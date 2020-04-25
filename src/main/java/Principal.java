@@ -1,10 +1,14 @@
+import com.apporiented.algorithm.clustering.*;
+import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
 import modelo.*;
 import org.opencompare.hac.HierarchicalAgglomerativeClusterer;
-import org.opencompare.hac.agglomeration.AgglomerationMethod;
-import org.opencompare.hac.agglomeration.CompleteLinkage;
+import org.opencompare.hac.agglomeration.*;
 import org.opencompare.hac.dendrogram.*;
 import org.opencompare.hac.experiment.DissimilarityMeasure;
 import org.opencompare.hac.experiment.Experiment;
+
+import javax.swing.*;
+import java.awt.*;
 
 public class Principal {
 
@@ -22,30 +26,36 @@ public class Principal {
         miFileManager.loadFile(misMediciones, config.getPath() + config.getFileProblema());
 
         misMediciones.completarMediciones();
-        System.out.println(misMediciones.toString());
+        //System.out.println(misMediciones.toString());
 
-        DissimilarityMeasure dissimilarityMeasure = new CompararMediciones();
-        AgglomerationMethod agglomerationMethod = new CompleteLinkage();
-        DendrogramBuilder dendrogramBuilder = new DendrogramBuilder(misMediciones.getNumberOfObservations());
-        HierarchicalAgglomerativeClusterer clusterer = new HierarchicalAgglomerativeClusterer(misMediciones, dissimilarityMeasure, agglomerationMethod);
-        clusterer.cluster(dendrogramBuilder);
-        Dendrogram dendrogram = dendrogramBuilder.getDendrogram();
+        ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
+        Cluster cluster = alg.performClustering(misMediciones.getMisMediciones(),
+                misMediciones.getElementos(), new CompleteLinkageStrategy());
+        DendrogramPanel dp = new DendrogramPanel();
+        dp.setModel(cluster);
 
-        dumpNode("--", dendrogram.getRoot());
-
-
+        DendrogramFrame(new JFrame(), cluster);
     }
 
-    private static void dumpNode(final String indent, final DendrogramNode node) {
-        if (node == null) {
-            System.out.println(indent + "<null>");
-        } else if (node instanceof ObservationNode) {
-            int n = ((ObservationNode) node).getObservation() + 1;
-            System.out.println(indent + "Observation: " + n);
-        } else if (node instanceof MergeNode) {
-            System.out.println(indent + "Merge:");
-            dumpNode(indent + indent, ((MergeNode) node).getLeft());
-            dumpNode(indent + indent, ((MergeNode) node).getRight());
-        }
+    private static void DendrogramFrame(JFrame frame, Cluster cluster) {
+        frame.setSize(500, 400);
+        frame.setLocation(100, 200);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
+
+        JPanel content = new JPanel();
+        DendrogramPanel dp = new DendrogramPanel();
+
+        frame.setContentPane(content);
+        content.setBackground(Color.red);
+        content.setLayout(new BorderLayout());
+        content.add(dp, BorderLayout.CENTER);
+        dp.setBackground(Color.WHITE);
+        dp.setLineColor(Color.BLACK);
+        dp.setScaleValueDecimals(0);
+        dp.setScaleValueInterval(1);
+        dp.setShowDistances(false);
+
+        dp.setModel(cluster);
+        frame.setVisible(true);
     }
 }

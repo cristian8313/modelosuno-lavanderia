@@ -1,45 +1,46 @@
 package modelo;
 
-import org.opencompare.hac.experiment.Experiment;
+public class Mediciones {
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+    private String[] elementos;
+    private double[][] misMediciones;
 
-public class Mediciones implements Experiment {
-    private Integer[][] misMediciones;
+    public void agregarMedicion(int x, int y, double medicion) {
+        this.misMediciones[x][y] = medicion;
+    }
 
-    public Mediciones() {
-        this.misMediciones = new Integer[20][20];
-        for (Integer[] l : this.misMediciones) {
-            for (int i = 0; i < 20; i++) {
-                l[i] = 0;
-            }
+    public double getRelacionMediciones(int i, int i1) {
+        return this.misMediciones[i][i1];
+    }
+
+    public double[][] getMisMediciones() {
+        return misMediciones;
+    }
+
+    public String[] getElementos() {
+        return elementos;
+    }
+
+    public void setDimension(int dimension) {
+        this.elementos = new String[dimension];
+        this.misMediciones = new double[dimension][dimension];
+        int j = 0;
+        for (double[] medicionesPrenda : this.misMediciones) {
+            this.elementos[j++] = String.valueOf(j);
+            for (int i = 0; i < this.misMediciones.length; i++)
+                medicionesPrenda[i] = 0.0;
         }
     }
 
-    @Override
-    public int getNumberOfObservations() {
-        return this.misMediciones.length;
-    }
-
-    public void agregarMedicion(int x, int y, Integer medicion) {
-        this.obtenerMediciones(x)[y] = medicion;
-    }
-
-    private Integer[] obtenerMediciones(int y) {
-        return this.misMediciones[y];
-    }
-    
     public void completarMediciones() {
         // es simetrica se puede optimizar
         for (int i = 0; i < this.misMediciones.length; i++) {
-            int tLavado = this.misMediciones[i][i];
+            double tLavado = this.misMediciones[i][i];
             for (int j = 0; j < this.misMediciones[i].length; j++) {
-                int t2Lavado = this.misMediciones[j][j];
-                int t3Lavado = this.misMediciones[i][j];
+                double t2Lavado = this.misMediciones[j][j];
+                double t3Lavado = this.misMediciones[i][j];
                 if (t3Lavado < t2Lavado ||
-                    t3Lavado < tLavado) {
+                        t3Lavado < tLavado) {
                     if (tLavado > t2Lavado)
                         this.misMediciones[i][j] = tLavado;
                     else {
@@ -48,6 +49,11 @@ public class Mediciones implements Experiment {
                 }
             }
         }
+
+        //diagonales distancia cero
+        for (int i = 0; i < this.misMediciones.length; i++) {
+            this.misMediciones[i][i] = 0.0;
+        }
     }
 
     @Override
@@ -55,24 +61,16 @@ public class Mediciones implements Experiment {
         System.out.println("length: " + this.misMediciones.length);
         String matriz = new String();
 
-        for (Integer[] l : this.misMediciones) {
-            for (int i = 0; i < 20; i++) {
-                if (l[i] == Integer.MAX_VALUE) {
-                    matriz += "I";
-                }
-                else {
-                    matriz += String.valueOf(l[i]);
-                }
-
+        for (double[] l : this.misMediciones) {
+            for (double dist : l) {
+                //if (l[i] == Double.MAX_VALUE) matriz += "I";
+                if (dist == 25.0) matriz += "I";
+                else { matriz += dist; }
                 matriz += " ";
             }
             matriz += "\n";
         }
 
         return matriz;
-    }
-
-    public double getRelacionMediciones(int i, int i1) {
-        return this.misMediciones[i][i1];
     }
 }

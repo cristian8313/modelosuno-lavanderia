@@ -4,8 +4,9 @@ import java.io.*;
 import java.util.Properties;
 
 public class Configuracion {
-    private String path;
-    private String fileProblema;
+
+    private static String path;
+    private static String fileProblema;
 
     public void cargarConfiguracion() {
         try (OutputStream output = new FileOutputStream("./src/main/resources/config.properties")) {

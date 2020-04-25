@@ -17,12 +17,18 @@ public class ConsumerDataFIle implements Consumer {
         ParserLineFile parserLineFile = new ParserLineFile();
         parserLineFile.parseredLine(s);
 
+        if (parserLineFile.isProblema()) {
+            this.mediciones.setDimension(parserLineFile.getCantMediciones());
+        }
+
         if(parserLineFile.isIncompatibilidad()) {
             this.mediciones.agregarMedicion(parserLineFile.getPrenda(),
-                    parserLineFile.getPrendaIncompatible(), Integer.MAX_VALUE);
+                    //parserLineFile.getPrendaIncompatible(), Double.MAX_VALUE);
+                    parserLineFile.getPrendaIncompatible(), 24.0);
 
             this.mediciones.agregarMedicion(parserLineFile.getPrendaIncompatible(),
-                    parserLineFile.getPrenda(), Integer.MAX_VALUE);
+                    //parserLineFile.getPrenda(), Double.MAX_VALUE);
+                    parserLineFile.getPrenda(), 24.0);
         }
 
         if(parserLineFile.isTiempoLavado()) {

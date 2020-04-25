@@ -1,16 +1,14 @@
 package modelo;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 public class ParserLineFile {
 
     private boolean isProblema;
     private boolean isIncompatibilidad;
     private boolean isTiempoLavado;
     private int prenda;
-    private int tiempoLavado;
+    private double tiempoLavado;
     private int prendaIncompatible;
+    private int cantPrendas;
 
     public ParserLineFile() {
         this.isIncompatibilidad = false;
@@ -19,6 +17,7 @@ public class ParserLineFile {
         this.prenda = 0;
         this.prendaIncompatible = 0;
         this.tiempoLavado = 0;
+        this.cantPrendas = 0;
     }
 
     public void parseredLine(String s) {
@@ -41,46 +40,29 @@ public class ParserLineFile {
     }
 
     private void procesoPrograma(String s) {
-        //System.out.println("problema");
         this.isProblema = true;
 
-        /*String[] arrOfStr = s.split(" ", 4);
+        String[] arrOfStr = s.split(" ", 4);
 
-        System.out.println("codigo: " + arrOfStr[0]);
-        System.out.println("comentario: " + arrOfStr[1]);
-        System.out.println("prendas: " + arrOfStr[2]);
-        System.out.println("incompatibilidades: " + arrOfStr[3]);*/
+        this.cantPrendas = Integer.parseInt(arrOfStr[2]);
     }
 
     private void procesoIncompatibilidad(String s) {
-        //System.out.println("inconpatible");
         this.isIncompatibilidad = true;
 
         String[] arrOfStr = s.split(" ", 3);
-
-        /*System.out.println("codigo: " + arrOfStr[0]);
-        System.out.println("prenda 1: " + arrOfStr[1]);
-        System.out.println("prenda 2: " + arrOfStr[2]);*/
-
-       /* this.prenda = 4;//Integer.parseInt(arrOfStr[1]);
-        this.prendaIncompatible = 8;//Integer.parseInt(arrOfStr[2]);*/
 
         this.prenda = Integer.parseInt(arrOfStr[1]) - 1;
         this.prendaIncompatible = Integer.parseInt(arrOfStr[2]) - 1;
     }
 
     private void procesoTiempoLavado(String s) {
-        //System.out.println("tiempo");
         this.isTiempoLavado = true;
 
         String[] arrOfStr = s.split(" ", 3);
 
-        /*System.out.println("codigo: " + arrOfStr[0]);
-        System.out.println("prenda: " + arrOfStr[1]);
-        System.out.println("t. lavado: " + arrOfStr[2]);*/
-
         this.prenda = Integer.parseInt(arrOfStr[1]) - 1;
-        this.tiempoLavado = Integer.parseInt(arrOfStr[2]) - 1;
+        this.tiempoLavado = Double.parseDouble(arrOfStr[2]);
     }
 
     private void procesoComentario(String s) {
@@ -111,9 +93,15 @@ public class ParserLineFile {
         return this.prendaIncompatible;
     }
 
-    public Integer getTiempoLavado() {
+    public double getTiempoLavado() {
         if (!this.isTiempoLavado)
             throw new IllegalStateException("Pedido incorrecto");
         return this.tiempoLavado;
+    }
+
+    public int getCantMediciones() {
+        if (!this.isProblema())
+            throw  new IllegalStateException("Pedido Incorrecto");
+        return this.cantPrendas;
     }
 }
