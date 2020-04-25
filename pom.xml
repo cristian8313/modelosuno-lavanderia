@@ -28,11 +28,11 @@
             <version>3.8.1</version>
             <type>maven-plugin</type>
         </dependency>
-        <!-- https://mvnrepository.com/artifact/org.grouplens.grapht/grapht -->
+        <!-- https://mvnrepository.com/artifact/org.opencompare/hac -->
         <dependency>
-            <groupId>org.jgrapht</groupId>
-            <artifactId>jgrapht-core</artifactId>
-            <version>1.4.0</version>
+            <groupId>org.opencompare</groupId>
+            <artifactId>hac</artifactId>
+            <version>1.0.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven.plugins</groupId>

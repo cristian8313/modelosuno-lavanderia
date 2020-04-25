@@ -6,16 +6,12 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 public class FileManager {
-    public void loadFile() {
+    public void loadFile(Mediciones mediciones, String rutaFile) {
         System.out.println("cargando...");
 
-        Configuracion config = new Configuracion();
-        //config.cargarConfiguracion();
-        config.getConfiguracion();
+        ConsumerDataFIle consumerDataFIle = new ConsumerDataFIle(mediciones);
 
-        ConsumerDataFIle consumerDataFIle = new ConsumerDataFIle();
-
-        try (Stream<String> stream = Files.lines(Paths.get(config.getPath() + config.getFileProblema()))) {
+        try (Stream<String> stream = Files.lines(Paths.get(rutaFile))) {
 
             stream.forEach(consumerDataFIle);
 

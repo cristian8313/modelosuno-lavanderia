@@ -1,18 +1,15 @@
 package modelo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.*;
-import org.jgrapht.*;
-import org.jgrapht.generate.*;
-import org.jgrapht.graph.*;
-import org.jgrapht.traverse.*;
-import org.jgrapht.util.*;
 
 public class ConsumerDataFIle implements Consumer {
 
-    private Graph<Vertice, DefaultEdge> directedGraph;
+    private Mediciones mediciones;
 
-    public ConsumerDataFIle () {
-        this.directedGraph = new DefaultDirectedGraph<Vertice, DefaultEdge>(DefaultEdge.class);
+    public ConsumerDataFIle (Mediciones mediciones) {
+        this.mediciones = mediciones;
     }
 
     private void saveData(String s) {
@@ -20,16 +17,17 @@ public class ConsumerDataFIle implements Consumer {
         ParserLineFile parserLineFile = new ParserLineFile();
         parserLineFile.parseredLine(s);
 
-        if(parserLineFile.isProblema()) {
-
-        }
-
         if(parserLineFile.isIncompatibilidad()) {
+            this.mediciones.agregarMedicion(parserLineFile.getPrenda(),
+                    parserLineFile.getPrendaIncompatible(), Integer.MAX_VALUE);
 
+            this.mediciones.agregarMedicion(parserLineFile.getPrendaIncompatible(),
+                    parserLineFile.getPrenda(), Integer.MAX_VALUE);
         }
 
         if(parserLineFile.isTiempoLavado()) {
-            this.directedGraph.addVertex(parserLineFile.getVertice());
+            this.mediciones.agregarMedicion(parserLineFile.getPrenda(),
+                    parserLineFile.getPrenda(), parserLineFile.getTiempoLavado());
         }
     }
 
