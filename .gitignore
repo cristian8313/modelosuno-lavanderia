@@ -1,3 +1,4 @@
 # Project exclude paths
 /target/
 /.idea/
+./modelosuno-lavanderia.iml
