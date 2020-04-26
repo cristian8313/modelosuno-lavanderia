@@ -1,14 +1,11 @@
 import com.apporiented.algorithm.clustering.*;
 import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
 import modelo.*;
-import org.opencompare.hac.HierarchicalAgglomerativeClusterer;
-import org.opencompare.hac.agglomeration.*;
 import org.opencompare.hac.dendrogram.*;
-import org.opencompare.hac.experiment.DissimilarityMeasure;
-import org.opencompare.hac.experiment.Experiment;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.IOException;
 
 public class Principal {
 
@@ -24,15 +21,21 @@ public class Principal {
         miFileManager.loadFile(misMediciones, config.PATH_INPUT + config.FILE_PROBLEMA);
 
         misMediciones.completarMediciones();
-        //System.out.println(misMediciones.toString());
 
         ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
         Cluster cluster = alg.performClustering(misMediciones.getMisMediciones(),
                 misMediciones.getElementos(), new CompleteLinkageStrategy());
-        DendrogramPanel dp = new DendrogramPanel();
-        dp.setModel(cluster);
 
-        DendrogramFrame(new JFrame(), cluster);
+        try {
+            ListadorLavados listador = new ListadorLavados(cluster);
+            listador.recorridoInorden();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        /*DendrogramPanel dp = new DendrogramPanel();
+        dp.setModel(cluster);
+        DendrogramFrame(new JFrame(), cluster);*/
     }
 
     private static void DendrogramFrame(JFrame frame, Cluster cluster) {
