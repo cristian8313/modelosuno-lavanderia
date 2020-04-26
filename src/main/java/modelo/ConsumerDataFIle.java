@@ -14,6 +14,7 @@ public class ConsumerDataFIle implements Consumer {
 
     private void saveData(String s) {
         //System.out.println(s);
+        Configuracion config = Configuracion.getConfiguracion();
         ParserLineFile parserLineFile = new ParserLineFile();
         parserLineFile.parseredLine(s);
 
@@ -23,12 +24,10 @@ public class ConsumerDataFIle implements Consumer {
 
         if(parserLineFile.isIncompatibilidad()) {
             this.mediciones.agregarMedicion(parserLineFile.getPrenda(),
-                    //parserLineFile.getPrendaIncompatible(), Double.MAX_VALUE);
-                    parserLineFile.getPrendaIncompatible(), 24.0);
+                    parserLineFile.getPrendaIncompatible(), config.HORA_MAXIMA);
 
             this.mediciones.agregarMedicion(parserLineFile.getPrendaIncompatible(),
-                    //parserLineFile.getPrenda(), Double.MAX_VALUE);
-                    parserLineFile.getPrenda(), 24.0);
+                    parserLineFile.getPrenda(), config.HORA_MAXIMA);
         }
 
         if(parserLineFile.isTiempoLavado()) {

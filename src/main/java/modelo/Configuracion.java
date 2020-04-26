@@ -5,17 +5,52 @@ import java.util.Properties;
 
 public class Configuracion {
 
-    private static String path;
-    private static String fileProblema;
+    public String SEPARADOR_PARSER;
+    public String PATH_INPUT;
+    public String FILE_PROBLEMA;
+    public double HORA_MAXIMA;
+    
+    private static Configuracion configuracion;
 
-    public void cargarConfiguracion() {
+    private Configuracion() {
+        this.cargarConfiguracion();
+
+        try (InputStream input = new FileInputStream("./src/main/resources/config.properties")) {
+
+            Properties prop = new Properties();
+
+            // load a properties file
+            prop.load(input);
+
+            // get the property value and print it out
+            this.PATH_INPUT = prop.getProperty("PATH_INPUT");
+            this.FILE_PROBLEMA = prop.getProperty("FILE_PROBLEMA");
+            this.HORA_MAXIMA = Double.parseDouble(prop.getProperty("HORA_MAXIMA"));
+            this.SEPARADOR_PARSER = prop.getProperty("SEPARADOR_PARSER");
+            System.out.println(this.SEPARADOR_PARSER);
+
+        } catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
+    public static Configuracion getConfiguracion() {
+        if (configuracion == null)
+            configuracion = new Configuracion();
+
+        return configuracion;
+    }
+
+    private void cargarConfiguracion() {
         try (OutputStream output = new FileOutputStream("./src/main/resources/config.properties")) {
 
             Properties prop = new Properties();
 
             // set the properties value
-            prop.setProperty("path", "./src/main/resources/");
-            prop.setProperty("fileProblema", "primer_problema.txt");
+            prop.setProperty("PATH_INPUT", "./src/main/resources/");
+            prop.setProperty("FILE_PROBLEMA", "primer_problema.txt");
+            prop.setProperty("HORA_MAXIMA", "24.0\0");
+            prop.setProperty("SEPARADOR_PARSER", " ");
 
             // save properties to project root folder
             prop.store(output, null);
@@ -27,29 +62,4 @@ public class Configuracion {
         }
     }
 
-    public String getFileProblema() {
-        return fileProblema;
-    }
-
-    public String getPath() {
-        return path;
-    }
-
-    public void getConfiguracion() {
-        try (InputStream input = new FileInputStream("./src/main/resources/config.properties")) {
-
-            Properties prop = new Properties();
-
-            // load a properties file
-            prop.load(input);
-
-            // get the property value and print it out
-            this.path = prop.getProperty("path");
-            this.fileProblema = prop.getProperty("fileProblema");
-
-        } catch (IOException ex) {
-            ex.printStackTrace();
-        }
-
-    }
 }

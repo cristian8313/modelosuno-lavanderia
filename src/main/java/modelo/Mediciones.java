@@ -58,13 +58,14 @@ public class Mediciones {
 
     @Override
     public String toString() {
+        Configuracion config = Configuracion.getConfiguracion();
         System.out.println("length: " + this.misMediciones.length);
         String matriz = new String();
 
         for (double[] l : this.misMediciones) {
             for (double dist : l) {
                 //if (l[i] == Double.MAX_VALUE) matriz += "I";
-                if (dist == 25.0) matriz += "I";
+                if (dist == config.HORA_MAXIMA) matriz += "I";
                 else { matriz += dist; }
                 matriz += " ";
             }

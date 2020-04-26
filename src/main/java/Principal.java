@@ -16,14 +16,12 @@ public class Principal {
 
     public static void main(String[] args) {
 
-        Configuracion config = new Configuracion();
-        //config.cargarConfiguracion();
-        config.getConfiguracion();
+        Configuracion config = Configuracion.getConfiguracion();
 
         Mediciones misMediciones =  new Mediciones();
 
         FileManager miFileManager = new FileManager();
-        miFileManager.loadFile(misMediciones, config.getPath() + config.getFileProblema());
+        miFileManager.loadFile(misMediciones, config.PATH_INPUT + config.FILE_PROBLEMA);
 
         misMediciones.completarMediciones();
         //System.out.println(misMediciones.toString());
