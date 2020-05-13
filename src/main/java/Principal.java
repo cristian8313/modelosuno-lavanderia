@@ -5,6 +5,7 @@ import org.opencompare.hac.dendrogram.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class Principal {
@@ -23,17 +24,21 @@ public class Principal {
         misMediciones.completarMediciones();
 
         ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
-        Cluster cluster = alg.performClustering(misMediciones.getMisMediciones(),
-                misMediciones.getElementos(), new CompleteLinkageStrategy());
 
         try {
-            ListadorLavados listador = new ListadorLavados(cluster);
-            listador.recorridoInorden();
+            int nLavado = 1;
+            ListadorLavados listadorLavados = new ListadorLavados();
+            for (Cluster c : alg.performFlatClustering(misMediciones.getMisMediciones(),
+                    misMediciones.getElementos(), new miLinkageStrategy(), 20.00))
+                listadorLavados.recorridoInorden(c, nLavado++);
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        /*DendrogramPanel dp = new DendrogramPanel();
+        /*Cluster cluster = alg.performClustering(misMediciones.getMisMediciones(),
+         misMediciones.getElementos(), new CompleteLinkageStrategy());
+
+        DendrogramPanel dp = new DendrogramPanel();
         dp.setModel(cluster);
         DendrogramFrame(new JFrame(), cluster);*/
     }

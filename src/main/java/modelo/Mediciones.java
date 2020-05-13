@@ -33,26 +33,24 @@ public class Mediciones {
     }
 
     public void completarMediciones() {
-        // es simetrica se puede optimizar
+        // es simetrica
         for (int i = 0; i < this.misMediciones.length; i++) {
             double tLavado = this.misMediciones[i][i];
-            for (int j = 0; j < this.misMediciones[i].length; j++) {
+            this.misMediciones[i][i] = 0.0;
+            for (int j = i; j < this.misMediciones[i].length; j++) {
                 double t2Lavado = this.misMediciones[j][j];
                 double t3Lavado = this.misMediciones[i][j];
                 if (t3Lavado < t2Lavado ||
                         t3Lavado < tLavado) {
-                    if (tLavado > t2Lavado)
+                    if (tLavado > t2Lavado) {
                         this.misMediciones[i][j] = tLavado;
-                    else {
+                        this.misMediciones[j][i] = tLavado;
+                    } else {
                         this.misMediciones[i][j] = t2Lavado;
+                        this.misMediciones[j][i] = t2Lavado;
                     }
                 }
             }
-        }
-
-        //diagonales distancia cero
-        for (int i = 0; i < this.misMediciones.length; i++) {
-            this.misMediciones[i][i] = 0.0;
         }
     }
 

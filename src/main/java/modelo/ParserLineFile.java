@@ -70,7 +70,7 @@ public class ParserLineFile {
         this.tiempoLavado = Double.parseDouble(arrOfStr[2]);
     }
 
-    private void procesoComentario(String s, Configuracion config) { System.out.println("omitido" + s); }
+    private void procesoComentario(String s, Configuracion config) { /*System.out.println("omitido" + s);*/ }
 
     public boolean isProblema() {
         return this.isProblema;
