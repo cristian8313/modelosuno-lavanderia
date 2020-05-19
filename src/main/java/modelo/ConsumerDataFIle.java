@@ -4,33 +4,31 @@ import java.util.function.*;
 
 public class ConsumerDataFIle implements Consumer {
 
-    private Mediciones mediciones;
+    private Experimento mediciones;
 
-    public ConsumerDataFIle (Mediciones mediciones) {
+    public ConsumerDataFIle (Experimento mediciones) {
         this.mediciones = mediciones;
     }
 
     private void saveData(String s) {
-        //System.out.println(s);
         Configuracion config = Configuracion.getConfiguracion();
         ParserLineFile parserLineFile = new ParserLineFile();
         parserLineFile.parseredLine(s);
 
         if (parserLineFile.isProblema()) {
-            this.mediciones.setDimension(parserLineFile.getCantMediciones());
+            //this.mediciones.setDimension(parserLineFile.getCantMediciones());
         }
 
         if(parserLineFile.isIncompatibilidad()) {
-            this.mediciones.agregarMedicion(parserLineFile.getPrenda(),
+            this.mediciones.agregarMedicionIncompatible(parserLineFile.getPrenda(),
                     parserLineFile.getPrendaIncompatible(), config.HORA_MAXIMA);
 
-            this.mediciones.agregarMedicion(parserLineFile.getPrendaIncompatible(),
+            this.mediciones.agregarMedicionIncompatible(parserLineFile.getPrendaIncompatible(),
                     parserLineFile.getPrenda(), config.HORA_MAXIMA);
         }
 
         if(parserLineFile.isTiempoLavado()) {
-            this.mediciones.agregarMedicion(parserLineFile.getPrenda(),
-                    parserLineFile.getPrenda(), parserLineFile.getTiempoLavado());
+            this.mediciones.agregarMedicionPrenda(parserLineFile.getPrenda(), parserLineFile.getTiempoLavado());
         }
     }
 

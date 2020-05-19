@@ -1,62 +1,38 @@
-import com.apporiented.algorithm.clustering.*;
-import com.apporiented.algorithm.clustering.visualization.DendrogramPanel;
 import modelo.*;
-import org.opencompare.hac.dendrogram.*;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.IOException;
+import java.io.*;
+
 
 public class Principal {
 
-    private static DendrogramNode dendrogramNode;
+    public static void main(String[] args) throws IOException {
 
-    public static void main(String[] args) {
+        //final long startTime = System.currentTimeMillis();
 
         Configuracion config = Configuracion.getConfiguracion();
 
-        Mediciones misMediciones =  new Mediciones();
+        Experimento miExperimento =  new Experimento();
 
         FileManager miFileManager = new FileManager();
-        miFileManager.loadFile(misMediciones, config.PATH_INPUT + config.FILE_PROBLEMA);
+        miFileManager.loadFile(miExperimento, config.PATH_INPUT + config.FILE_PROBLEMA);
 
-        misMediciones.completarMediciones();
+        /*final long endTime = System.currentTimeMillis();
+        final long elapsed = endTime - startTime;
+        System.out.println("Clustering took " + (double) elapsed/1000 + " seconds");*/
 
-        ClusteringAlgorithm alg = new DefaultClusteringAlgorithm();
-        Cluster cluster = alg.performClustering(misMediciones.getMisMediciones(),
-                misMediciones.getElementos(), new CompleteLinkageStrategy());
+        Heuristica miHeuristica = new Heuristica(miExperimento);
+        miHeuristica.runHeuritica();
 
         try {
-            ListadorLavados listador = new ListadorLavados(cluster);
-            listador.recorridoInorden();
-        } catch (IOException e) {
+            OutputStream fileOut = null;
+            fileOut = new FileOutputStream(new File(config.PATH_OUT + config.FILE_OUT));
+
+            miHeuristica.imprimirLavados(fileOut);
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        /*DendrogramPanel dp = new DendrogramPanel();
-        dp.setModel(cluster);
-        DendrogramFrame(new JFrame(), cluster);*/
-    }
-
-    private static void DendrogramFrame(JFrame frame, Cluster cluster) {
-        frame.setSize(500, 400);
-        frame.setLocation(100, 200);
-        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-
-        JPanel content = new JPanel();
-        DendrogramPanel dp = new DendrogramPanel();
-
-        frame.setContentPane(content);
-        content.setBackground(Color.red);
-        content.setLayout(new BorderLayout());
-        content.add(dp, BorderLayout.CENTER);
-        dp.setBackground(Color.WHITE);
-        dp.setLineColor(Color.BLACK);
-        dp.setScaleValueDecimals(0);
-        dp.setScaleValueInterval(1);
-        dp.setShowDistances(false);
-
-        dp.setModel(cluster);
-        frame.setVisible(true);
+        System.out.println(miHeuristica.toString());
+        System.out.println("Resultado: " + miHeuristica.getTiempoTotal());
     }
 }

@@ -6,8 +6,8 @@ import java.nio.file.Paths;
 import java.util.stream.Stream;
 
 public class FileManager {
-    public void loadFile(Mediciones mediciones, String rutaFile) {
-        System.out.println("cargando...");
+    public void loadFile(Experimento mediciones, String rutaFile) {
+        //System.out.println("cargando...");
 
         ConsumerDataFIle consumerDataFIle = new ConsumerDataFIle(mediciones);
 

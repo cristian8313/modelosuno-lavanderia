@@ -15,7 +15,7 @@ public class Configuracion {
     private static Configuracion configuracion;
 
     private Configuracion() {
-        this.cargarConfiguracion();
+        //this.cargarConfiguracion();
 
         try (InputStream input = new FileInputStream("./src/main/resources/config.properties")) {
 
