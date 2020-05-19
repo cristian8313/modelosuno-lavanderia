@@ -50,4 +50,30 @@ public class Experimento {
         return this.incomp;
     }
 
+    public SortedMap<Double, ArrayList<Prenda>> sortPrendasBy() {
+        SortedMap<Double, ArrayList<Prenda>> mapP = new TreeMap<Double, ArrayList<Prenda>>(Collections.reverseOrder());
+        Iterator it = this.prendasSort.entrySet().iterator();
+
+        while (it.hasNext()) {
+            Map.Entry m = (Map.Entry) it.next();
+            ArrayList<Prenda> aP = (ArrayList<Prenda>) m.getValue();
+            // 1. Convert Map to List of Map
+            List<Prenda> list = new LinkedList<Prenda>(aP);
+
+            // 2. Sort list with Collections.sort(), provide a custom Comparator
+            // Try switch the o1 o2 position for a different order
+            Collections.sort(list, new Comparator<Prenda>() {
+                public int compare(Prenda p1, Prenda p2) {
+                    int i = p1.getCantIncompatibles().compareTo(p2.getCantIncompatibles());
+                    if (i != 0) return -i;
+                    return (p1.getCantIncompatibles().compareTo(p2.getCantIncompatibles()));
+                }
+            });
+
+            mapP.put((Double) m.getKey(), new ArrayList<Prenda>(list));
+        }
+
+        return mapP;
+    }
+
 }

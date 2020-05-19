@@ -17,8 +17,8 @@ public class Prenda {
         return String.valueOf(idPrenda);
     }
 
-    public int getCantIncompatibles() {
-        return cantIncompatibles;
+    public Integer getCantIncompatibles() {
+        return new Integer(cantIncompatibles);
     }
 
     public void setCantIncompatibles(int cantIncompatibles) {

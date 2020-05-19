@@ -18,7 +18,8 @@ public class Heuristica {
     }
 
     public void runHeuritica() {
-        Iterator i = this.experimento.getPrendasSort().entrySet().iterator();
+        //Iterator i = this.experimento.getPrendasSort().entrySet().iterator();
+        Iterator i = this.experimento.sortPrendasBy().entrySet().iterator();
 
         while (i.hasNext()) {
             Map.Entry m = (Map.Entry) i.next();
