@@ -19,50 +19,59 @@ public class Heuristica {
 
     public void runHeuritica() {
         //Iterator i = this.experimento.getPrendasSort().entrySet().iterator();
-        Iterator i = this.experimento.sortPrendasBy().entrySet().iterator();
+        Iterator<Prenda> i = this.experimento.sortPrendasByGrado().iterator();
 
-        while (i.hasNext()) {
-            Map.Entry m = (Map.Entry) i.next();
-            Double tiempo = (Double) m.getKey();
+        // tomo la prenda de mayor grado y asigno un lavado
+        Prenda p = i.next();
+        p.setNlavado(++this.nLavado);
+        this.lavados.add(new Lavado(this.nLavado, p.getTiempoLavado(), new HashSet<Prenda>()));
 
-            ArrayList<String> vPrendas = (ArrayList<String>) m.getValue();
-
-            Iterator it = vPrendas.iterator();
-            while (it.hasNext())
-                asignarLavados(tiempo, (Prenda) it.next());
+        // sumo 1 al grado de saturacion de los incompatibles de la prenda
+        Iterator<Prenda> ip = this.experimento.getIncompatibles().get(p.getIdPrenda()).iterator();
+        while (ip.hasNext()) {
+            Prenda xp = ip.next();
+            xp.setNlavadosIncompatibles(xp.getNlavadosIncompatibles() + 1);
         }
-    }
 
-    private void asignarLavados(double tiempo, Prenda prenda) {
-
-        Iterator it = this.lavados.iterator();
-        boolean asignar = true;
-
-        while (it.hasNext() && asignar) {
-            Lavado l = (Lavado) it.next();
-            if (Math.abs(l.getTiempoLavado() - tiempo) <= this.umbral && !l.getPrendas().contains(prenda)) {
-                for (Prenda prendaLavado : l.getPrendas()) {
-                    if (this.experimento.getIncompatibles().get(prenda.getIdPrenda()).contains(prendaLavado.getIdPrenda())) {
-                        // tengo que asignar por tiempo
-                        // sumando uno al tiempo de la prenda que quiero asignar
-                        // recursivo(tiempo + 1, prenda);
-                        asignar = false;
+        while (prendaSinAsignar() != null) {
+            Prenda pr = prendaSinAsignar();
+            boolean asingarLavado = true;
+            Iterator<Lavado> iL = this.sortLavadosByNumero().iterator();
+            while (iL.hasNext() && asingarLavado) {
+                Lavado lvdo = iL.next();
+                Iterator<Prenda> ipr = this.experimento.getIncompatibles().get(pr.getIdPrenda()).iterator();
+                while (ipr.hasNext()) {
+                    if (ipr.next().getNlavado() == lvdo.getIdLavado()) {
+                        asingarLavado = false;
                         break;
                     }
                 }
-                if (asignar) {
-                    l.agregarPrenda(prenda);
-                    l.setTiempoLavado(Math.max(l.getTiempoLavado(), tiempo));
-                    asignar = false;
+                if (asingarLavado) {
+                    pr.setNlavado(lvdo.getIdLavado());
+                    if (lvdo.getTiempoLavado() < pr.getTiempoLavado())
+                        lvdo.setTiempoLavado(pr.getTiempoLavado());
+                    // sumo 1 al grado de saturacion de los incompatibles de la prenda
+                    Iterator<Prenda> ipr2 = this.experimento.getIncompatibles().get(pr.getIdPrenda()).iterator();
+                    while (ipr2.hasNext()) {
+                        Prenda pr2 = ipr2.next();
+                        pr2.setNlavadosIncompatibles(pr2.getNlavadosIncompatibles() + 1);
+                    }
+                    asingarLavado = false;
+                } else {
+                    asingarLavado = true;
                 }
-                else asignar = true;
             }
-        }
+            if (asingarLavado) {
+                pr.setNlavado(++this.nLavado);
+                this.lavados.add(new Lavado(this.nLavado, pr.getTiempoLavado(), new HashSet<Prenda>()));
 
-        if (asignar) {
-            Lavado l2 = new Lavado(++nLavado, tiempo, new HashSet<Prenda>());
-            l2.agregarPrenda(prenda);
-            this.lavados.add(l2);
+                // sumo 1 al grado de saturacion de los incompatibles de la prenda
+                Iterator<Prenda> ipr2 = this.experimento.getIncompatibles().get(pr.getIdPrenda()).iterator();
+                while (ipr2.hasNext()) {
+                    Prenda pr2 = ipr2.next();
+                    pr2.setNlavadosIncompatibles(pr2.getNlavadosIncompatibles() + 1);
+                }
+            }
         }
     }
 
@@ -73,16 +82,16 @@ public class Heuristica {
     public void imprimirLavados(OutputStream fileOut) throws IOException {
         Configuracion config = Configuracion.getConfiguracion();
 
-        for (Lavado lavado : this.getLavados())
-            for (Prenda prenda : lavado.getPrendas())
-                fileOut.write((prenda.getIdPrenda() + config.SEPARADOR_PARSER + lavado.getIdLavado() + "\n").getBytes());
+        //for (Lavado lavado : this.getLavados())
+            for (Prenda prenda : this.experimento.getPrendas())
+                fileOut.write((prenda.getIdPrenda() + config.SEPARADOR_PARSER + prenda.getNlavado() + "\n").getBytes());
     }
 
     public String toString() {
         String listaPrendaLavado = "";
-        for (Lavado lavado : this.getLavados())
-            for (Prenda prenda : lavado.getPrendas())
-                listaPrendaLavado += prenda.getIdPrenda() + " " + lavado.getIdLavado() + "\n";
+        //for (Lavado lavado : this.getLavados())
+            for (Prenda prenda : this.experimento.getPrendas())
+                listaPrendaLavado += prenda.getIdPrenda() + " " + prenda.getNlavado() + "\n";
         return listaPrendaLavado;
     }
 
@@ -91,6 +100,31 @@ public class Heuristica {
         for (Lavado lavado : this.getLavados())
             tiempoTotal += lavado.getTiempoLavado();
         return tiempoTotal;
+    }
+
+    private Prenda prendaSinAsignar() {
+        Iterator<Prenda> i = this.experimento.sortPrendasBySatur().iterator();
+        while (i.hasNext()) {
+            Prenda p = i.next();
+            if (p.getNlavado() == 0)
+                return p;
+        }
+        return null;
+    }
+
+    public List<Lavado> sortLavadosByNumero() {
+        // 1. Convert Map to List of Map
+        List<Lavado> list = new LinkedList<Lavado>(this.lavados);
+
+        // 2. Sort list with Collections.sort(), provide a custom Comparator
+        // Try switch the o1 o2 position for a different order
+        Collections.sort(list, new Comparator<Lavado>() {
+            public int compare(Lavado l1, Lavado l2) {
+                return (new Integer(l1.getIdLavado()).compareTo(new Integer(l2.getIdLavado())));
+            }
+        });
+
+        return list;
     }
 
 }

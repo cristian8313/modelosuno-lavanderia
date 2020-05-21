@@ -5,13 +5,13 @@ import java.util.*;
 public class Experimento {
 
     private Configuracion config;
-    private Map<Integer, HashSet<Integer>> incomp;
-    private SortedMap<Double, ArrayList<Prenda>> prendasSort;
+    private Map<Integer, HashSet<Prenda>> incomp;
+    private ArrayList<Prenda> prendas;
 
     public Experimento() {
         this.config = Configuracion.getConfiguracion();
-        this.incomp = new HashMap<Integer, HashSet<Integer>>();
-        this.prendasSort = new TreeMap<Double, ArrayList<Prenda>>(Collections.reverseOrder());
+        this.incomp = new HashMap<Integer, HashSet<Prenda>>();
+        this.prendas = new ArrayList<Prenda>();
     }
 
     public void agregarMedicionIncompatible(int x, int y, double medicion) {
@@ -20,60 +20,101 @@ public class Experimento {
     }
 
     private void insertarIncompatible(int x, int y) {
-        if (this.incomp.containsKey(x + 1)) {
-            this.incomp.get(x + 1).add(y + 1);
+        Prenda px = new Prenda(x + 1);
+        Prenda py = new Prenda(y + 1);
+
+        if (!this.prendas.contains(px))
+            this.prendas.add(px);
+        else
+            px = this.prendas.get(this.prendas.indexOf(px));
+
+        if (!this.prendas.contains(py))
+            this.prendas.add(py);
+        else
+            py = this.prendas.get(this.prendas.indexOf(py));
+
+        if (this.incomp.containsKey(px.getIdPrenda())) {
+            this.incomp.get(px.getIdPrenda()).add(py);
         } else {
-            HashSet<Integer> priQx = new HashSet<Integer>();
-            priQx.add(y + 1);
-            this.incomp.put(x + 1, priQx);
+            HashSet<Prenda> priQx = new HashSet<Prenda>();
+            priQx.add(py);
+            this.incomp.put(px.getIdPrenda(), priQx);
         }
     }
 
     public void agregarMedicionPrenda(int x, double medicion) {
-        Prenda p = new Prenda(x + 1);
-        p.setCantIncompatibles(this.incomp.get(p.getIdPrenda()).size());
+        Prenda px = new Prenda(x + 1);
 
-        if (this.prendasSort.containsKey(medicion))
-            this.prendasSort.get(medicion).add(p);
-        else {
-            ArrayList<Prenda> arrP = new ArrayList<Prenda>();
-            arrP.add(p);
-            this.prendasSort.put(medicion, arrP);
+        if (!this.prendas.contains(px)) {
+            px.setTiempoLavado(medicion);
+            this.prendas.add(px);
+            this.incomp.put(px.getIdPrenda(), new HashSet<Prenda>());
+        } else {
+            Prenda p1 = this.prendas.get(this.prendas.indexOf(px));
+            p1.setTiempoLavado(medicion);
+            p1.setNPrendasIncompatibles(this.incomp.get(p1.getIdPrenda()).size());
         }
     }
 
-    public SortedMap<Double, ArrayList<Prenda>> getPrendasSort() {
-        return this.prendasSort;
+    public ArrayList<Prenda> getPrendas() {
+        return this.prendas;
     }
 
-    public Map<Integer, HashSet<Integer>> getIncompatibles() {
+    public Map<Integer, HashSet<Prenda>> getIncompatibles() {
         return this.incomp;
     }
 
-    public SortedMap<Double, ArrayList<Prenda>> sortPrendasBy() {
-        SortedMap<Double, ArrayList<Prenda>> mapP = new TreeMap<Double, ArrayList<Prenda>>(Collections.reverseOrder());
-        Iterator it = this.prendasSort.entrySet().iterator();
+    public List<Prenda> sortPrendasByGrado() {
+        // 1. Convert Map to List of Map
+        List<Prenda> list = new LinkedList<Prenda>(this.prendas);
 
-        while (it.hasNext()) {
-            Map.Entry m = (Map.Entry) it.next();
-            ArrayList<Prenda> aP = (ArrayList<Prenda>) m.getValue();
-            // 1. Convert Map to List of Map
-            List<Prenda> list = new LinkedList<Prenda>(aP);
-
-            // 2. Sort list with Collections.sort(), provide a custom Comparator
-            // Try switch the o1 o2 position for a different order
-            Collections.sort(list, new Comparator<Prenda>() {
-                public int compare(Prenda p1, Prenda p2) {
-                    int i = p1.getCantIncompatibles().compareTo(p2.getCantIncompatibles());
+        // 2. Sort list with Collections.sort(), provide a custom Comparator
+        // Try switch the o1 o2 position for a different order
+        /*Collections.sort(list, new Comparator<Prenda>() {
+            public int compare(Prenda p1, Prenda p2) {
+                int i = p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles());
+                if (i != 0) return -i;
+                return (p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles()));
+            }
+        });*/
+        Collections.sort(list, new Comparator<Prenda>() {
+            public int compare(Prenda p1, Prenda p2) {
+                int i = (new Double(p1.getTiempoLavado()).compareTo(new Double(p2.getTiempoLavado())));
+                if (i != 0) return -i;
+                else {
+                    i = (p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles()));
                     if (i != 0) return -i;
-                    return (p1.getCantIncompatibles().compareTo(p2.getCantIncompatibles()));
+                    return (p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles()));
                 }
-            });
+            }
+        });
 
-            mapP.put((Double) m.getKey(), new ArrayList<Prenda>(list));
-        }
-
-        return mapP;
+        return list;
     }
 
+    public List<Prenda> sortPrendasBySatur() {
+        // 1. Convert Map to List of Map
+        List<Prenda> list = new LinkedList<Prenda>(this.prendas);
+
+        // 2. Sort list with Collections.sort(), provide a custom Comparator
+        // Try switch the o1 o2 position for a different order
+        Collections.sort(list, new Comparator<Prenda>() {
+            public int compare(Prenda p1, Prenda p2) {
+                int i = p1.getNlavadosIncompatibles().compareTo(p2.getNlavadosIncompatibles());
+                if (i != 0) return -i;
+                else {
+                    i = (new Double(p1.getTiempoLavado()).compareTo(new Double(p2.getTiempoLavado())));
+                    if (i != 0) return -i;
+                    else {
+                        i = p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles());
+                        if (i != 0) return -i;
+                        return (p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles()));
+                    }
+                    //return (p1.getNlavadosIncompatibles().compareTo(p2.getNlavadosIncompatibles()));
+                }
+            }
+        });
+
+        return list;
+    }
 }
