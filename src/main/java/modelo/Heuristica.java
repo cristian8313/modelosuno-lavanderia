@@ -75,6 +75,87 @@ public class Heuristica {
         }
     }
 
+    public double cotaInferior() {
+        double cota = 0;
+        double cotaAux = 0;
+        HashSet<Prenda> descartados = new HashSet<Prenda>();
+        Iterator<Prenda> i = this.experimento.sortPrendasByIncomp().iterator();
+
+        while(i.hasNext()) {
+            HashSet<Prenda> clique = new HashSet<Prenda>();
+            Prenda p = i.next();
+            cotaAux = p.getTiempoLavado();
+
+            boolean addPInc = false;
+            while (!clique.contains(p)) {
+                clique.add(p);
+                //iteracion
+                //Iterator<Prenda> i2 = this.experimento.getIncompatibles().get(p.getIdPrenda()).iterator();
+
+                ///
+                // 1. Convert Map to List of Map
+                List<Prenda> list = new LinkedList<Prenda>(this.experimento.getIncompatibles().get(p.getIdPrenda()));
+
+                // 2. Sort list with Collections.sort(), provide a custom Comparator
+                // Try switch the o1 o2 position for a different order
+                Collections.sort(list, new Comparator<Prenda>() {
+                    public int compare(Prenda p1, Prenda p2) {
+                        int i = new Double(p1.getTiempoLavado()).compareTo(new Double(p2.getTiempoLavado()));
+                        if (i != 0) return -i;
+                        return (new Double(p1.getTiempoLavado()).compareTo(new Double(p2.getTiempoLavado())));
+                    }
+                });
+
+                Iterator<Prenda> i2 = list.iterator();
+                ///
+
+                while (i2.hasNext() && !addPInc) {
+                    Prenda inc = i2.next();
+
+                    addPInc = true;
+                    for (Prenda cp : clique) {
+                        if (!this.experimento.getIncompatibles().get(cp.getIdPrenda()).contains(inc))
+                            addPInc = false;
+                    }
+                    if (addPInc) {
+                        p = inc;
+                        cotaAux += p.getTiempoLavado();
+                        addPInc = false;
+                        break;
+                    }
+                }
+            }
+
+            /*// asumo que todos estos van juntos en un lavado con el tiempo maximo
+            double subCota = 0;
+            Iterator<Prenda> iAux = this.experimento.getPrendas().iterator();
+            while (iAux.hasNext()) {
+                Prenda pAux = iAux.next();
+                if (!clique.contains(pAux)) {
+                    boolean esta = false;
+                    for (Prenda pcl : clique) {
+                        if (this.experimento.getIncompatibles().get(pcl.getIdPrenda()).contains(pAux)) {
+                            esta = true;
+                            break;
+                        }
+                    }
+                    if (!esta) {
+                        descartados.add(pAux);
+                        if (subCota < pAux.getTiempoLavado())
+                            subCota = pAux.getTiempoLavado();
+                    }
+                }
+            }
+            System.out.println(cota + ", " + cotaAux + ", " + subCota);
+            cotaAux += subCota;*/
+
+            if (cota < cotaAux)
+                cota = cotaAux;
+        }
+
+        return cota;
+    }
+
     private ArrayList<Lavado> getLavados() {
         return lavados;
     }

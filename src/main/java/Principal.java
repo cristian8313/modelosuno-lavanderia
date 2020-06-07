@@ -34,5 +34,6 @@ public class Principal {
 
         System.out.println(miHeuristica.toString());
         System.out.println("Resultado: " + miHeuristica.getTiempoTotal());
+        System.out.println("Cota inferior: " + miHeuristica.cotaInferior());
     }
 }

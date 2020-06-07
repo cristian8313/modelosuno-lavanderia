@@ -92,6 +92,23 @@ public class Experimento {
         return list;
     }
 
+    public List<Prenda> sortPrendasByIncomp() {
+        // 1. Convert Map to List of Map
+        List<Prenda> list = new LinkedList<Prenda>(this.prendas);
+
+        // 2. Sort list with Collections.sort(), provide a custom Comparator
+        // Try switch the o1 o2 position for a different order
+        Collections.sort(list, new Comparator<Prenda>() {
+            public int compare(Prenda p1, Prenda p2) {
+                int i = p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles());
+                if (i != 0) return -i;
+                return (p1.getNPrendasIncompatibles().compareTo(p2.getNPrendasIncompatibles()));
+            }
+        });
+
+        return list;
+    }
+
     public List<Prenda> sortPrendasBySatur() {
         // 1. Convert Map to List of Map
         List<Prenda> list = new LinkedList<Prenda>(this.prendas);
