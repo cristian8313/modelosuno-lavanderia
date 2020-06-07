@@ -15,4 +15,5 @@
 > Cada renglón tiene dos valores separados por un espacio, el primero es el número de prenda, el según el número de lavado asignado. ej: "1 5" Esto sería lavar la prenda "1" en el lavado "5"
 
 **Herramientas**
+> adaptacion del algoritmo de coloreo Dsatur
 
